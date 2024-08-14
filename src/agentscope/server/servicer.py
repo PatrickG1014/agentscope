@@ -483,9 +483,12 @@ class AgentServerServicer(RpcAgentServicer):
             `RpcMsg`: Empty RpcMsg.
         """
         msgs = deserialize(request.value)
-        for msg in msgs:
-            if isinstance(msg, PlaceholderMessage):
-                msg.update_value()
+        if isinstance(msgs, list):
+            for msg in msgs:
+                if isinstance(msg, PlaceholderMessage):
+                    msg.update_value()
+        elif isinstance(msgs, PlaceholderMessage):
+            msgs.update_value()
         self.agent_pool[request.agent_id].observe(msgs)
         return agent_pb2.GeneralResponse(ok=True)
 
